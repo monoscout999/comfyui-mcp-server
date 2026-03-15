@@ -217,7 +217,7 @@ Example agent conversation flow:
 - Calls `generate_image(prompt="a modern logo")` → gets `asset_id`
 - Calls `publish_asset(asset_id="...", manifest_key="site-logo")` → auto-generates filename, updates manifest
 
-See [docs/HOW_TO_TEST_PUBLISH.md](docs/HOW_TO_TEST_PUBLISH.md) for detailed usage and testing instructions.
+See [tests/HOW_TO_TEST_PUBLISH.md](tests/HOW_TO_TEST_PUBLISH.md) for detailed usage and testing instructions.
 
 ## Custom Workflows
 

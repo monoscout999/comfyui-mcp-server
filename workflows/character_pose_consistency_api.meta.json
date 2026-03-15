@@ -1,0 +1,142 @@
+{
+  "name": "Character Pose Consistency API",
+  "description": "Generate a consistent character in a target pose/situation using IPAdapter + OpenPose ControlNet (single image output).",
+  "defaults": {
+    "model": "dreamshaper_8.safetensors",
+    "width": 768,
+    "height": 432,
+    "steps": 28,
+    "cfg": 6.8,
+    "sampler_name": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 1.0,
+    "ipadapter_weight": 0.72,
+    "controlnet_strength": 0.55,
+    "controlnet_end_percent": 0.85
+  },
+  "override_mappings": {
+    "prompt": [
+      [
+        "6",
+        "text"
+      ]
+    ],
+    "negative_prompt": [
+      [
+        "7",
+        "text"
+      ]
+    ],
+    "model": [
+      [
+        "1",
+        "ckpt_name"
+      ]
+    ],
+    "pose_image": [
+      [
+        "8",
+        "image"
+      ]
+    ],
+    "reference_image": [
+      [
+        "9",
+        "image"
+      ]
+    ],
+    "width": [
+      [
+        "12",
+        "width"
+      ]
+    ],
+    "height": [
+      [
+        "12",
+        "height"
+      ]
+    ],
+    "seed": [
+      [
+        "13",
+        "seed"
+      ]
+    ],
+    "steps": [
+      [
+        "13",
+        "steps"
+      ]
+    ],
+    "cfg": [
+      [
+        "13",
+        "cfg"
+      ]
+    ],
+    "sampler_name": [
+      [
+        "13",
+        "sampler_name"
+      ]
+    ],
+    "scheduler": [
+      [
+        "13",
+        "scheduler"
+      ]
+    ],
+    "denoise": [
+      [
+        "13",
+        "denoise"
+      ]
+    ],
+    "ipadapter_weight": [
+      [
+        "11",
+        "weight"
+      ]
+    ],
+    "controlnet_strength": [
+      [
+        "10",
+        "strength"
+      ]
+    ],
+    "controlnet_end_percent": [
+      [
+        "10",
+        "end_percent"
+      ]
+    ]
+  },
+  "constraints": {
+    "width": {
+      "min": 256,
+      "max": 2048
+    },
+    "height": {
+      "min": 256,
+      "max": 2048
+    },
+    "steps": {
+      "min": 1,
+      "max": 80
+    },
+    "cfg": {
+      "min": 1.0,
+      "max": 20.0
+    },
+    "ipadapter_weight": {
+      "min": 0.2,
+      "max": 1.5
+    },
+    "controlnet_strength": {
+      "min": 0.0,
+      "max": 1.5
+    }
+  },
+  "updated_at": "2026-02-18"
+}

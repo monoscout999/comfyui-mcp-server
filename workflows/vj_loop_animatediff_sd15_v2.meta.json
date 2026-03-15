@@ -1,0 +1,403 @@
+{
+  "name": "VJ Loop AnimateDiff SD15 v2",
+  "description": "Seamless elegant loop workflow using SD1.5 + AnimateDiff + VideoHelperSuite with 3 configurable LoRA slots and model presets.",
+  "defaults": {
+    "model": "dreamshaper_8.safetensors",
+    "negative_prompt": "ugly, deformed, noisy, blurry, low quality, jpeg artifacts, text, watermark, signature, chaotic, harsh",
+    "width": 768,
+    "height": 432,
+    "frames": 48,
+    "context_length": 16,
+    "context_stride": 1,
+    "context_overlap": 4,
+    "closed_loop": true,
+    "fuse_method": "pyramid",
+    "seed": 3812947178,
+    "steps": 26,
+    "cfg": 7.0,
+    "sampler_name": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 1.0,
+    "fps": 12,
+    "format": "video/h264-mp4",
+    "filename_prefix": "VJLoop_AD_SD15_v2",
+    "motion_model": "mm_sd_v15_v2.ckpt",
+    "vae": "vae-ft-mse-840000-ema-pruned.safetensors",
+    "lora1_name": "add_detail.safetensors",
+    "lora1_strength": 0.45,
+    "lora2_name": "epiNoiseoffset_v2.safetensors",
+    "lora2_strength": 0.3,
+    "lora3_name": "add_detail.safetensors",
+    "lora3_strength": 0.0,
+    "detail_strength": 0.45,
+    "noiseoffset_strength": 0.3
+  },
+  "presets": {
+    "dreamshaper_balanced": {
+      "model": "dreamshaper_8.safetensors",
+      "steps": 26,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "width": 768,
+      "height": 432,
+      "lora1_strength": 0.45,
+      "lora2_strength": 0.3,
+      "lora3_strength": 0.0,
+      "notes": "Rango recomendado: steps 24-28, cfg 6.5-7.5. Alternativa: 896x512."
+    },
+    "realisticvision_clean": {
+      "model": "Realistic_Vision_V5.1_fp16-no-ema.safetensors",
+      "steps": 28,
+      "cfg": 6.0,
+      "sampler_name": "dpmpp_2m_sde",
+      "scheduler": "karras",
+      "width": 768,
+      "height": 432,
+      "lora1_strength": 0.35,
+      "lora2_strength": 0.25,
+      "lora3_strength": 0.0,
+      "notes": "Rango recomendado: steps 25-30, cfg 5.5-6.5."
+    },
+    "deliberate_stylized": {
+      "model": "Deliberate_v2.safetensors",
+      "steps": 28,
+      "cfg": 7.0,
+      "sampler_name": "euler_ancestral",
+      "scheduler": "normal",
+      "width": 512,
+      "height": 512,
+      "lora1_strength": 0.3,
+      "lora2_strength": 0.2,
+      "lora3_strength": 0.0,
+      "notes": "Rango recomendado: steps 26-32, cfg 6.5-7.5. Alternativa sampler: uni_pc. Alternativa resolución: 768x432."
+    }
+  },
+  "override_mappings": {
+    "prompt": [
+      [
+        "13",
+        "text"
+      ]
+    ],
+    "negative_prompt": [
+      [
+        "14",
+        "text"
+      ]
+    ],
+    "model": [
+      [
+        "10",
+        "ckpt_name"
+      ]
+    ],
+    "width": [
+      [
+        "15",
+        "width"
+      ]
+    ],
+    "height": [
+      [
+        "15",
+        "height"
+      ]
+    ],
+    "frames": [
+      [
+        "15",
+        "batch_size"
+      ]
+    ],
+    "context_length": [
+      [
+        "16",
+        "context_length"
+      ]
+    ],
+    "context_stride": [
+      [
+        "16",
+        "context_stride"
+      ]
+    ],
+    "context_overlap": [
+      [
+        "16",
+        "context_overlap"
+      ]
+    ],
+    "closed_loop": [
+      [
+        "16",
+        "closed_loop"
+      ]
+    ],
+    "fuse_method": [
+      [
+        "16",
+        "fuse_method"
+      ]
+    ],
+    "motion_model": [
+      [
+        "17",
+        "model_name"
+      ]
+    ],
+    "seed": [
+      [
+        "18",
+        "seed"
+      ]
+    ],
+    "steps": [
+      [
+        "18",
+        "steps"
+      ]
+    ],
+    "cfg": [
+      [
+        "18",
+        "cfg"
+      ]
+    ],
+    "sampler_name": [
+      [
+        "18",
+        "sampler_name"
+      ]
+    ],
+    "scheduler": [
+      [
+        "18",
+        "scheduler"
+      ]
+    ],
+    "denoise": [
+      [
+        "18",
+        "denoise"
+      ]
+    ],
+    "vae": [
+      [
+        "19",
+        "vae_name"
+      ]
+    ],
+    "fps": [
+      [
+        "21",
+        "frame_rate"
+      ]
+    ],
+    "format": [
+      [
+        "21",
+        "format"
+      ]
+    ],
+    "filename_prefix": [
+      [
+        "21",
+        "filename_prefix"
+      ]
+    ],
+    "lora1_name": [
+      [
+        "11",
+        "lora_name"
+      ]
+    ],
+    "lora2_name": [
+      [
+        "12",
+        "lora_name"
+      ]
+    ],
+    "lora3_name": [
+      [
+        "23",
+        "lora_name"
+      ]
+    ],
+    "lora1_strength": [
+      [
+        "11",
+        "strength_model"
+      ],
+      [
+        "11",
+        "strength_clip"
+      ]
+    ],
+    "lora2_strength": [
+      [
+        "12",
+        "strength_model"
+      ],
+      [
+        "12",
+        "strength_clip"
+      ]
+    ],
+    "lora3_strength": [
+      [
+        "23",
+        "strength_model"
+      ],
+      [
+        "23",
+        "strength_clip"
+      ]
+    ],
+    "detail_strength": [
+      [
+        "11",
+        "strength_model"
+      ],
+      [
+        "11",
+        "strength_clip"
+      ]
+    ],
+    "noiseoffset_strength": [
+      [
+        "12",
+        "strength_model"
+      ],
+      [
+        "12",
+        "strength_clip"
+      ]
+    ]
+  },
+  "constraints": {
+    "model": {
+      "enum": [
+        "dreamshaper_8.safetensors",
+        "Realistic_Vision_V5.1_fp16-no-ema.safetensors",
+        "Deliberate_v2.safetensors"
+      ]
+    },
+    "lora1_name": {
+      "enum": [
+        "add_detail.safetensors",
+        "epiNoiseoffset_v2.safetensors"
+      ]
+    },
+    "lora2_name": {
+      "enum": [
+        "add_detail.safetensors",
+        "epiNoiseoffset_v2.safetensors"
+      ]
+    },
+    "lora3_name": {
+      "enum": [
+        "add_detail.safetensors",
+        "epiNoiseoffset_v2.safetensors"
+      ]
+    },
+    "sampler_name": {
+      "enum": [
+        "dpmpp_2m",
+        "dpmpp_2m_sde",
+        "euler_ancestral",
+        "uni_pc"
+      ]
+    },
+    "scheduler": {
+      "enum": [
+        "karras",
+        "normal"
+      ]
+    },
+    "format": {
+      "enum": [
+        "video/h264-mp4",
+        "video/webm"
+      ]
+    },
+    "motion_model": {
+      "enum": [
+        "mm_sd_v15_v2.ckpt"
+      ]
+    },
+    "vae": {
+      "enum": [
+        "vae-ft-mse-840000-ema-pruned.safetensors"
+      ]
+    },
+    "fuse_method": {
+      "enum": [
+        "pyramid",
+        "flat",
+        "overlap-linear"
+      ]
+    },
+    "width": {
+      "min": 256,
+      "max": 1024
+    },
+    "height": {
+      "min": 256,
+      "max": 1024
+    },
+    "frames": {
+      "min": 16,
+      "max": 96
+    },
+    "fps": {
+      "min": 8,
+      "max": 24
+    },
+    "context_length": {
+      "min": 8,
+      "max": 32
+    },
+    "context_stride": {
+      "min": 1,
+      "max": 32
+    },
+    "context_overlap": {
+      "min": 0,
+      "max": 16
+    },
+    "steps": {
+      "min": 12,
+      "max": 60
+    },
+    "cfg": {
+      "min": 1.0,
+      "max": 12.0
+    },
+    "denoise": {
+      "min": 0.7,
+      "max": 1.0
+    },
+    "lora1_strength": {
+      "min": -2.0,
+      "max": 2.0
+    },
+    "lora2_strength": {
+      "min": -2.0,
+      "max": 2.0
+    },
+    "lora3_strength": {
+      "min": -2.0,
+      "max": 2.0
+    },
+    "detail_strength": {
+      "min": -2.0,
+      "max": 2.0
+    },
+    "noiseoffset_strength": {
+      "min": -2.0,
+      "max": 2.0
+    }
+  },
+  "updated_at": "2026-02-17"
+}

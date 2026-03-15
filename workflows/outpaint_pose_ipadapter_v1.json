@@ -1,0 +1,306 @@
+{
+  "1": {
+    "inputs": {
+      "ckpt_name": "PARAM_MODEL"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Checkpoint"
+    }
+  },
+  "2": {
+    "inputs": {
+      "image": "PARAM_REFERENCE_IMAGE"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Reference Image"
+    }
+  },
+  "3": {
+    "inputs": {
+      "image": [
+        "2",
+        0
+      ],
+      "left": 0,
+      "top": 0,
+      "right": 0,
+      "bottom": 512,
+      "feathering": 64
+    },
+    "class_type": "ImagePadForOutpaint",
+    "_meta": {
+      "title": "Pad For Outpaint"
+    }
+  },
+  "4": {
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "PARAM_PROMPT"
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Positive"
+    }
+  },
+  "5": {
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "PARAM_NEGATIVE_PROMPT"
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Negative"
+    }
+  },
+  "6": {
+    "inputs": {
+      "positive": [
+        "4",
+        0
+      ],
+      "negative": [
+        "5",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ],
+      "pixels": [
+        "3",
+        0
+      ],
+      "mask": [
+        "3",
+        1
+      ],
+      "noise_mask": true
+    },
+    "class_type": "InpaintModelConditioning",
+    "_meta": {
+      "title": "Inpaint Conditioning"
+    }
+  },
+  "7": {
+    "inputs": {
+      "control_net_name": "control_v11p_sd15_openpose.pth"
+    },
+    "class_type": "ControlNetLoader",
+    "_meta": {
+      "title": "OpenPose ControlNet"
+    }
+  },
+  "8": {
+    "inputs": {
+      "image": "PARAM_POSE_IMAGE"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Pose Guide"
+    }
+  },
+  "9": {
+    "inputs": {
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "6",
+        1
+      ],
+      "control_net": [
+        "7",
+        0
+      ],
+      "image": [
+        "8",
+        0
+      ],
+      "strength": 0.45,
+      "start_percent": 0.0,
+      "end_percent": 0.65
+    },
+    "class_type": "ControlNetApplyAdvanced",
+    "_meta": {
+      "title": "ControlNet Pass 1"
+    }
+  },
+  "12": {
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "seed": "PARAM_INT_SEED",
+      "steps": 16,
+      "cfg": 5.2,
+      "sampler_name": "PARAM_SAMPLER_NAME",
+      "scheduler": "PARAM_SCHEDULER",
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "9",
+        1
+      ],
+      "latent_image": [
+        "6",
+        2
+      ],
+      "denoise": 0.42
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler Pass 1 (Seam)"
+    }
+  },
+  "13": {
+    "inputs": {
+      "samples": [
+        "12",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "Decode Pass 1"
+    }
+  },
+  "14": {
+    "inputs": {
+      "pixels": [
+        "13",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ],
+      "mask": [
+        "3",
+        1
+      ],
+      "grow_mask_by": 14
+    },
+    "class_type": "VAEEncodeForInpaint",
+    "_meta": {
+      "title": "Encode For Pass 2"
+    }
+  },
+  "15": {
+    "inputs": {
+      "samples": [
+        "14",
+        0
+      ],
+      "mask": [
+        "3",
+        1
+      ]
+    },
+    "class_type": "SetLatentNoiseMask",
+    "_meta": {
+      "title": "Noise Mask Pass 2"
+    }
+  },
+  "16": {
+    "inputs": {
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "6",
+        1
+      ],
+      "control_net": [
+        "7",
+        0
+      ],
+      "image": [
+        "8",
+        0
+      ],
+      "strength": 0.62,
+      "start_percent": 0.0,
+      "end_percent": 0.9
+    },
+    "class_type": "ControlNetApplyAdvanced",
+    "_meta": {
+      "title": "ControlNet Pass 2"
+    }
+  },
+  "17": {
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "seed": "PARAM_INT_SEED",
+      "steps": "PARAM_INT_STEPS",
+      "cfg": "PARAM_FLOAT_CFG",
+      "sampler_name": "PARAM_SAMPLER_NAME",
+      "scheduler": "PARAM_SCHEDULER",
+      "positive": [
+        "16",
+        0
+      ],
+      "negative": [
+        "16",
+        1
+      ],
+      "latent_image": [
+        "15",
+        0
+      ],
+      "denoise": 0.68
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler Pass 2 (Body)"
+    }
+  },
+  "18": {
+    "inputs": {
+      "samples": [
+        "17",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "Final Decode"
+    }
+  },
+  "19": {
+    "inputs": {
+      "images": [
+        "18",
+        0
+      ],
+      "filename_prefix": "OutpaintPoseIP_v1/outpaint"
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save"
+    }
+  }
+}

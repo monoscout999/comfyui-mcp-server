@@ -4,6 +4,7 @@ import logging
 from typing import Any, Dict, Optional
 
 from mcp.server.fastmcp import FastMCP
+from tools.error_utils import exception_error, tool_error
 from tools.helpers import register_and_build_response
 
 logger = logging.getLogger("MCP_Server")
@@ -57,7 +58,11 @@ def register_workflow_tools(
         # Load workflow
         workflow = workflow_manager.load_workflow(workflow_id)
         if not workflow:
-            return {"error": f"Workflow '{workflow_id}' not found"}
+            return tool_error(
+                f"Workflow '{workflow_id}' not found",
+                code="WORKFLOW_NOT_FOUND",
+                hint="Use list_workflows() to view available workflow IDs.",
+            )
         
         try:
             # Apply overrides with constraints
@@ -95,4 +100,8 @@ def register_workflow_tools(
             return response
         except Exception as exc:
             logger.exception("Workflow '%s' failed", workflow_id)
-            return {"error": str(exc)}
+            return exception_error(
+                exc,
+                code="WORKFLOW_EXECUTION_FAILED",
+                hint="Check workflow overrides and ComfyUI availability, then retry.",
+            )

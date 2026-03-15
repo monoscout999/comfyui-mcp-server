@@ -1,0 +1,105 @@
+{
+  "name": "Text To Image API",
+  "description": "API workflow for checkpoint-based text-to-image generation (ComfyUI prompt format).",
+  "defaults": {
+    "width": 1024,
+    "height": 1024,
+    "steps": 30,
+    "cfg": 7.0,
+    "sampler_name": "euler",
+    "scheduler": "normal",
+    "denoise": 1.0,
+    "negative_prompt": "text, watermark, low quality"
+  },
+  "override_mappings": {
+    "prompt": [
+      [
+        "11",
+        "text"
+      ]
+    ],
+    "negative_prompt": [
+      [
+        "12",
+        "text"
+      ]
+    ],
+    "model": [
+      [
+        "10",
+        "ckpt_name"
+      ]
+    ],
+    "width": [
+      [
+        "13",
+        "width"
+      ]
+    ],
+    "height": [
+      [
+        "13",
+        "height"
+      ]
+    ],
+    "seed": [
+      [
+        "14",
+        "seed"
+      ]
+    ],
+    "steps": [
+      [
+        "14",
+        "steps"
+      ]
+    ],
+    "cfg": [
+      [
+        "14",
+        "cfg"
+      ]
+    ],
+    "sampler_name": [
+      [
+        "14",
+        "sampler_name"
+      ]
+    ],
+    "scheduler": [
+      [
+        "14",
+        "scheduler"
+      ]
+    ],
+    "denoise": [
+      [
+        "14",
+        "denoise"
+      ]
+    ]
+  },
+  "constraints": {
+    "width": {
+      "min": 256,
+      "max": 2048
+    },
+    "height": {
+      "min": 256,
+      "max": 2048
+    },
+    "steps": {
+      "min": 1,
+      "max": 100
+    },
+    "cfg": {
+      "min": 1.0,
+      "max": 20.0
+    },
+    "denoise": {
+      "min": 0.0,
+      "max": 1.0
+    }
+  },
+  "updated_at": "2026-02-16"
+}

@@ -1,0 +1,216 @@
+{
+  "name": "VJ Loop AnimateDiff SD15",
+  "description": "Seamless elegant loop workflow using SD1.5 + AnimateDiff + VideoHelperSuite.",
+  "defaults": {
+    "model": "dreamshaper_8.safetensors",
+    "negative_prompt": "ugly, deformed, noisy, blurry, low quality, jpeg artifacts, text, watermark, signature, chaotic, harsh",
+    "width": 768,
+    "height": 432,
+    "frames": 48,
+    "context_length": 16,
+    "context_overlap": 4,
+    "closed_loop": true,
+    "seed": 3812947178,
+    "steps": 26,
+    "cfg": 7.0,
+    "sampler_name": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 1.0,
+    "fps": 12,
+    "format": "video/h264-mp4",
+    "filename_prefix": "VJLoop_AD_SD15",
+    "detail_strength": 0.45,
+    "noiseoffset_strength": 0.3,
+    "motion_model": "mm_sd_v15_v2.ckpt",
+    "vae": "vae-ft-mse-840000-ema-pruned.safetensors"
+  },
+  "override_mappings": {
+    "prompt": [
+      [
+        "13",
+        "text"
+      ]
+    ],
+    "negative_prompt": [
+      [
+        "14",
+        "text"
+      ]
+    ],
+    "model": [
+      [
+        "10",
+        "ckpt_name"
+      ]
+    ],
+    "width": [
+      [
+        "15",
+        "width"
+      ]
+    ],
+    "height": [
+      [
+        "15",
+        "height"
+      ]
+    ],
+    "frames": [
+      [
+        "15",
+        "batch_size"
+      ]
+    ],
+    "context_length": [
+      [
+        "16",
+        "context_length"
+      ]
+    ],
+    "context_overlap": [
+      [
+        "16",
+        "context_overlap"
+      ]
+    ],
+    "closed_loop": [
+      [
+        "16",
+        "closed_loop"
+      ]
+    ],
+    "seed": [
+      [
+        "18",
+        "seed"
+      ]
+    ],
+    "steps": [
+      [
+        "18",
+        "steps"
+      ]
+    ],
+    "cfg": [
+      [
+        "18",
+        "cfg"
+      ]
+    ],
+    "sampler_name": [
+      [
+        "18",
+        "sampler_name"
+      ]
+    ],
+    "scheduler": [
+      [
+        "18",
+        "scheduler"
+      ]
+    ],
+    "denoise": [
+      [
+        "18",
+        "denoise"
+      ]
+    ],
+    "fps": [
+      [
+        "21",
+        "frame_rate"
+      ]
+    ],
+    "format": [
+      [
+        "21",
+        "format"
+      ]
+    ],
+    "filename_prefix": [
+      [
+        "21",
+        "filename_prefix"
+      ]
+    ],
+    "detail_strength": [
+      [
+        "11",
+        "strength_model"
+      ],
+      [
+        "11",
+        "strength_clip"
+      ]
+    ],
+    "noiseoffset_strength": [
+      [
+        "12",
+        "strength_model"
+      ],
+      [
+        "12",
+        "strength_clip"
+      ]
+    ],
+    "motion_model": [
+      [
+        "17",
+        "model_name"
+      ]
+    ],
+    "vae": [
+      [
+        "19",
+        "vae_name"
+      ]
+    ]
+  },
+  "constraints": {
+    "width": {
+      "min": 256,
+      "max": 1280
+    },
+    "height": {
+      "min": 256,
+      "max": 1280
+    },
+    "frames": {
+      "min": 16,
+      "max": 128
+    },
+    "context_length": {
+      "min": 8,
+      "max": 48
+    },
+    "context_overlap": {
+      "min": 0,
+      "max": 24
+    },
+    "steps": {
+      "min": 10,
+      "max": 60
+    },
+    "cfg": {
+      "min": 1.0,
+      "max": 20.0
+    },
+    "denoise": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "fps": {
+      "min": 4,
+      "max": 30
+    },
+    "detail_strength": {
+      "min": -2.0,
+      "max": 2.0
+    },
+    "noiseoffset_strength": {
+      "min": -2.0,
+      "max": 2.0
+    }
+  },
+  "updated_at": "2026-02-17"
+}

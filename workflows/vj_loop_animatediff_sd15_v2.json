@@ -1,0 +1,210 @@
+{
+  "10": {
+    "inputs": {
+      "ckpt_name": "dreamshaper_8.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint (SD1.5)"
+    }
+  },
+  "11": {
+    "inputs": {
+      "model": [
+        "10",
+        0
+      ],
+      "clip": [
+        "10",
+        1
+      ],
+      "lora_name": "add_detail.safetensors",
+      "strength_model": 0.45,
+      "strength_clip": 0.45
+    },
+    "class_type": "LoraLoader",
+    "_meta": {
+      "title": "LoRA Slot 1"
+    }
+  },
+  "12": {
+    "inputs": {
+      "model": [
+        "11",
+        0
+      ],
+      "clip": [
+        "11",
+        1
+      ],
+      "lora_name": "epiNoiseoffset_v2.safetensors",
+      "strength_model": 0.3,
+      "strength_clip": 0.3
+    },
+    "class_type": "LoraLoader",
+    "_meta": {
+      "title": "LoRA Slot 2"
+    }
+  },
+  "23": {
+    "inputs": {
+      "model": [
+        "12",
+        0
+      ],
+      "clip": [
+        "12",
+        1
+      ],
+      "lora_name": "add_detail.safetensors",
+      "strength_model": 0.0,
+      "strength_clip": 0.0
+    },
+    "class_type": "LoraLoader",
+    "_meta": {
+      "title": "LoRA Slot 3"
+    }
+  },
+  "13": {
+    "inputs": {
+      "text": "PARAM_PROMPT",
+      "clip": [
+        "23",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Positive Prompt"
+    }
+  },
+  "14": {
+    "inputs": {
+      "text": "ugly, deformed, noisy, blurry, low quality, jpeg artifacts, text, watermark, signature, chaotic, harsh",
+      "clip": [
+        "23",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Negative Prompt"
+    }
+  },
+  "15": {
+    "inputs": {
+      "width": 768,
+      "height": 432,
+      "batch_size": 48
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Empty Latent (Frames)"
+    }
+  },
+  "16": {
+    "inputs": {
+      "context_length": 16,
+      "context_stride": 1,
+      "context_overlap": 4,
+      "context_schedule": "uniform",
+      "closed_loop": true,
+      "fuse_method": "pyramid"
+    },
+    "class_type": "ADE_AnimateDiffUniformContextOptions",
+    "_meta": {
+      "title": "AnimateDiff Context (Closed Loop)"
+    }
+  },
+  "17": {
+    "inputs": {
+      "model": [
+        "23",
+        0
+      ],
+      "model_name": "mm_sd_v15_v2.ckpt",
+      "beta_schedule": "autoselect",
+      "context_options": [
+        "16",
+        0
+      ]
+    },
+    "class_type": "ADE_AnimateDiffLoaderGen1",
+    "_meta": {
+      "title": "AnimateDiff Loader Gen1"
+    }
+  },
+  "18": {
+    "inputs": {
+      "model": [
+        "17",
+        0
+      ],
+      "seed": 3812947178,
+      "steps": 26,
+      "cfg": 7.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "positive": [
+        "13",
+        0
+      ],
+      "negative": [
+        "14",
+        0
+      ],
+      "latent_image": [
+        "15",
+        0
+      ],
+      "denoise": 1.0
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "19": {
+    "inputs": {
+      "vae_name": "vae-ft-mse-840000-ema-pruned.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "VAE Loader"
+    }
+  },
+  "20": {
+    "inputs": {
+      "samples": [
+        "18",
+        0
+      ],
+      "vae": [
+        "19",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "21": {
+    "inputs": {
+      "images": [
+        "20",
+        0
+      ],
+      "frame_rate": 12,
+      "loop_count": 0,
+      "filename_prefix": "VJLoop_AD_SD15_v2",
+      "format": "video/h264-mp4",
+      "pingpong": false,
+      "save_output": true
+    },
+    "class_type": "VHS_VideoCombine",
+    "_meta": {
+      "title": "Video Combine (VHS)"
+    }
+  }
+}

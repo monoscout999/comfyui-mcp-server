@@ -9,6 +9,7 @@ from typing import Any, Dict, Optional
 from mcp.server.fastmcp import FastMCP
 from managers.workflow_manager import AUDIO_OUTPUT_KEYS, VIDEO_OUTPUT_KEYS
 from models.workflow import WorkflowToolDefinition
+from tools.error_utils import exception_error, tool_error
 from tools.helpers import register_and_build_response
 
 logger = logging.getLogger("MCP_Server")
@@ -99,7 +100,12 @@ def register_workflow_generation_tools(
                         if sample_models:
                             error_msg += f" Available models: {sample_models}"
 
-                        return {"error": error_msg}
+                        return tool_error(
+                            error_msg,
+                            code="MODEL_NOT_FOUND",
+                            hint="Call list_models() and set a valid default model.",
+                            details={"namespace": namespace, "model": model_name, "source": source},
+                        )
                 
                 workflow = workflow_manager.render_workflow(definition, dict(bound.arguments), defaults_manager)
                 result = comfyui_client.run_custom_workflow(
@@ -140,10 +146,21 @@ def register_workflow_generation_tools(
                         if sample_models:
                             error_msg += f" Available models: {sample_models}"
 
-                        return {"error": error_msg}
+                        return tool_error(
+                            error_msg,
+                            code="MODEL_NOT_FOUND",
+                            hint="Call list_models() and set a valid default model.",
+                            details={"namespace": namespace, "model": model_name, "source": source},
+                        )
+                
 
                 logger.exception("Workflow '%s' failed", definition.workflow_id)
-                return {"error": str(exc)}
+                return exception_error(
+                    exc,
+                    code="WORKFLOW_GENERATION_FAILED",
+                    hint="Check tool parameters and ComfyUI availability, then retry.",
+                    details={"workflow_id": definition.workflow_id, "tool_name": definition.tool_name},
+                )
 
         # Separate required and optional parameters to ensure correct ordering
         required_params = []
@@ -381,12 +398,21 @@ def register_regenerate_tool(
             # Step 1: Retrieve original asset metadata
             asset = asset_registry.get_asset(asset_id)
             if not asset:
-                return {"error": f"Asset {asset_id} not found (registry is in-memory and resets on restart). Generate a new asset to regenerate."}
+                return tool_error(
+                    f"Asset {asset_id} not found (registry is in-memory and resets on restart). Generate a new asset to regenerate.",
+                    code="ASSET_NOT_FOUND_OR_EXPIRED",
+                    details={"asset_id": asset_id},
+                )
             
             # Extract the stored workflow
             original_workflow = asset.submitted_workflow
             if not original_workflow:
-                return {"error": "No workflow data stored for this asset. Cannot regenerate."}
+                return tool_error(
+                    "No workflow data stored for this asset. Cannot regenerate.",
+                    code="ASSET_WORKFLOW_MISSING",
+                    hint="Generate a new asset and retry regenerate() with that asset_id.",
+                    details={"asset_id": asset_id},
+                )
             
             # Step 2: Deep copy workflow to avoid mutating the stored one
             workflow = copy.deepcopy(original_workflow)
@@ -428,4 +454,9 @@ def register_regenerate_tool(
             )
         except Exception as e:
             logger.exception(f"Failed to regenerate asset {asset_id}")
-            return {"error": f"Failed to regenerate: {str(e)}"}
+            return exception_error(
+                e,
+                code="REGENERATE_FAILED",
+                hint="Check asset provenance and ComfyUI status, then retry.",
+                details={"asset_id": asset_id},
+            )

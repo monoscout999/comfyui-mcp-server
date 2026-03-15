@@ -42,7 +42,7 @@ PLACEHOLDER_DESCRIPTIONS = {
 }
 DEFAULT_OUTPUT_KEYS = ("images", "image", "gifs", "gif")
 AUDIO_OUTPUT_KEYS = ("audio", "audios", "sound", "files")
-VIDEO_OUTPUT_KEYS = ("videos", "video", "mp4", "mov", "webm")
+VIDEO_OUTPUT_KEYS = ("videos", "video", "mp4", "mov", "webm", "gifs", "gif")
 
 
 class WorkflowManager:
@@ -289,6 +289,9 @@ class WorkflowManager:
             return definitions
 
         for workflow_path in sorted(self.workflows_dir.glob("*.json")):
+            # Sidecar metadata files are not executable workflows.
+            if workflow_path.name.endswith(".meta.json"):
+                continue
             try:
                 with open(workflow_path, "r", encoding="utf-8") as handle:
                     workflow = json.load(handle)
@@ -372,6 +375,8 @@ class WorkflowManager:
     def _extract_parameters(self, workflow: Dict[str, Any]):
         parameters: "OrderedDict[str, WorkflowParameter]" = OrderedDict()
         for node_id, node in workflow.items():
+            if not isinstance(node, dict):
+                continue
             inputs = node.get("inputs", {})
             if not isinstance(inputs, dict):
                 continue

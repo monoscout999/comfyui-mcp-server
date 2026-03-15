@@ -4,6 +4,7 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from mcp.server.fastmcp import FastMCP
+from tools.error_utils import exception_error, tool_error
 
 logger = logging.getLogger("MCP_Server")
 
@@ -42,7 +43,11 @@ def register_job_tools(
             }
         except Exception as e:
             logger.exception("Failed to get queue status")
-            return {"error": str(e)}
+            return exception_error(
+                e,
+                code="QUEUE_STATUS_FAILED",
+                hint="Ensure ComfyUI is reachable and retry get_queue_status().",
+            )
     
     @mcp.tool()
     def get_job(prompt_id: str) -> dict:
@@ -65,11 +70,11 @@ def register_job_tools(
             - message: Human-readable status message
         """
         if not prompt_id or not prompt_id.strip():
-            return {
-                "status": "error",
-                "error": "Invalid prompt_id: empty or None",
-                "prompt_id": prompt_id
-            }
+            return tool_error(
+                "Invalid prompt_id: empty or None",
+                code="INVALID_PROMPT_ID",
+                details={"prompt_id": prompt_id},
+            )
         
         try:
             # Check queue first to see if it's still running/queued
@@ -160,20 +165,20 @@ def register_job_tools(
                         }
             except Exception as history_error:
                 logger.warning(f"Failed to get history for {prompt_id}: {history_error}")
-                return {
-                    "status": "error",
-                    "prompt_id": prompt_id,
-                    "error": f"Failed to retrieve history: {str(history_error)}",
-                    "message": "Could not check job status - ComfyUI may be unavailable"
-                }
+                return tool_error(
+                    f"Failed to retrieve history: {str(history_error)}",
+                    code="JOB_HISTORY_UNAVAILABLE",
+                    hint="ComfyUI may be unavailable; check server health and retry.",
+                    details={"prompt_id": prompt_id},
+                )
         except Exception as e:
             logger.exception(f"Failed to get job status for {prompt_id}")
-            return {
-                "status": "error",
-                "prompt_id": prompt_id,
-                "error": str(e),
-                "message": f"Unexpected error checking job status: {str(e)}"
-            }
+            return exception_error(
+                e,
+                code="JOB_STATUS_FAILED",
+                hint="Retry get_job() or inspect ComfyUI logs for this prompt_id.",
+                details={"prompt_id": prompt_id},
+            )
     
     @mcp.tool()
     def list_assets(
@@ -243,7 +248,11 @@ def register_job_tools(
             }
         except Exception as e:
             logger.exception("Failed to list assets")
-            return {"error": str(e)}
+            return exception_error(
+                e,
+                code="LIST_ASSETS_FAILED",
+                hint="Retry list_assets() after checking asset registry health.",
+            )
     
     @mcp.tool()
     def get_asset_metadata(asset_id: str) -> dict:
@@ -267,7 +276,11 @@ def register_job_tools(
         try:
             asset = asset_registry.get_asset(asset_id)
             if not asset:
-                return {"error": f"Asset {asset_id} not found (registry is in-memory and resets on restart). Generate a new asset to regenerate."}
+                return tool_error(
+                    f"Asset {asset_id} not found (registry is in-memory and resets on restart). Generate a new asset to regenerate.",
+                    code="ASSET_NOT_FOUND_OR_EXPIRED",
+                    details={"asset_id": asset_id},
+                )
             
             asset_url = asset.asset_url or asset.get_asset_url(asset_registry.comfyui_base_url)
             
@@ -299,7 +312,12 @@ def register_job_tools(
             return result
         except Exception as e:
             logger.exception(f"Failed to get asset metadata for {asset_id}")
-            return {"error": str(e)}
+            return exception_error(
+                e,
+                code="ASSET_METADATA_FAILED",
+                hint="Retry get_asset_metadata() with a valid, current-session asset_id.",
+                details={"asset_id": asset_id},
+            )
     
     @mcp.tool()
     def cancel_job(prompt_id: str) -> dict:
@@ -325,4 +343,9 @@ def register_job_tools(
             }
         except Exception as e:
             logger.exception(f"Failed to cancel job {prompt_id}")
-            return {"error": str(e)}
+            return exception_error(
+                e,
+                code="CANCEL_JOB_FAILED",
+                hint="Verify prompt_id exists in queue/history and retry cancel_job().",
+                details={"prompt_id": prompt_id},
+            )

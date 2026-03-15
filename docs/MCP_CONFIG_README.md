@@ -1,6 +1,6 @@
 # MCP Configuration for Cursor
 
-This file explains how to configure Cursor to connect to the ComfyUI MCP Server. For general usage instructions, see [README.md](README.md).
+This file explains how to configure Cursor to connect to the ComfyUI MCP Server. For general usage instructions, see [README.md](../README.md).
 
 ## Two Connection Methods
 

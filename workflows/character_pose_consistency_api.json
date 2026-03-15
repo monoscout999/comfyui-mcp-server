@@ -1,0 +1,236 @@
+{
+  "1": {
+    "inputs": {
+      "ckpt_name": "dreamshaper_8.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "CheckpointLoaderSimple"
+    }
+  },
+  "2": {
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "clip": [
+        "1",
+        1
+      ],
+      "lora_name": "add_detail.safetensors",
+      "strength_model": 0.25,
+      "strength_clip": 0.25
+    },
+    "class_type": "LoraLoader",
+    "_meta": {
+      "title": "LoRA Detail (Low)"
+    }
+  },
+  "3": {
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "clip": [
+        "2",
+        1
+      ],
+      "lora_name": "epiNoiseoffset_v2.safetensors",
+      "strength_model": 0.15,
+      "strength_clip": 0.15
+    },
+    "class_type": "LoraLoader",
+    "_meta": {
+      "title": "LoRA NoiseOffset (Low)"
+    }
+  },
+  "4": {
+    "inputs": {
+      "cnet": "control_v11p_sd15_openpose.pth"
+    },
+    "class_type": "ACN_ControlNetLoaderAdvanced",
+    "_meta": {
+      "title": "Load Advanced ControlNet"
+    }
+  },
+  "5": {
+    "inputs": {
+      "model": [
+        "3",
+        0
+      ],
+      "preset": "PLUS (high strength)"
+    },
+    "class_type": "IPAdapterUnifiedLoader",
+    "_meta": {
+      "title": "IPAdapter Unified Loader"
+    }
+  },
+  "6": {
+    "inputs": {
+      "clip": [
+        "3",
+        1
+      ],
+      "text": "{{SCENE_PROMPT}}"
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Positive Prompt"
+    }
+  },
+  "7": {
+    "inputs": {
+      "clip": [
+        "3",
+        1
+      ],
+      "text": "ugly, deformed, noisy, blurry, low quality, bad anatomy, duplicate face, extra limbs, warped armor"
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Negative Prompt"
+    }
+  },
+  "8": {
+    "inputs": {
+      "image": "{{POSE_IMAGE}}"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Pose Image"
+    }
+  },
+  "9": {
+    "inputs": {
+      "image": "{{REFERENCE_IMAGE}}"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Reference Image"
+    }
+  },
+  "10": {
+    "inputs": {
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "control_net": [
+        "4",
+        0
+      ],
+      "image": [
+        "8",
+        0
+      ],
+      "strength": 0.55,
+      "start_percent": 0.0,
+      "end_percent": 0.85
+    },
+    "class_type": "ACN_AdvancedControlNetApply_v2",
+    "_meta": {
+      "title": "Apply Advanced ControlNet"
+    }
+  },
+  "11": {
+    "inputs": {
+      "model": [
+        "5",
+        0
+      ],
+      "ipadapter": [
+        "5",
+        1
+      ],
+      "image": [
+        "9",
+        0
+      ],
+      "weight": 0.72,
+      "start_at": 0.0,
+      "end_at": 1.0,
+      "weight_type": "standard"
+    },
+    "class_type": "IPAdapter",
+    "_meta": {
+      "title": "Apply IPAdapter"
+    }
+  },
+  "12": {
+    "inputs": {
+      "width": 768,
+      "height": 432,
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "EmptyLatentImage"
+    }
+  },
+  "13": {
+    "inputs": {
+      "model": [
+        "11",
+        0
+      ],
+      "positive": [
+        "10",
+        0
+      ],
+      "negative": [
+        "10",
+        1
+      ],
+      "latent_image": [
+        "12",
+        0
+      ],
+      "seed": 1234567890,
+      "steps": 28,
+      "cfg": 6.8,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1.0
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "14": {
+    "inputs": {
+      "samples": [
+        "13",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAEDecode"
+    }
+  },
+  "15": {
+    "inputs": {
+      "images": [
+        "14",
+        0
+      ],
+      "filename_prefix": "CharacterPose/shot"
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "SaveImage"
+    }
+  }
+}

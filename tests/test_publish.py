@@ -141,11 +141,12 @@ class TestValidationFunctions:
         assert validate_target_filename("test-image.png") is True
         assert validate_target_filename("logo_123.jpg") is True
         assert validate_target_filename("a.webp") is True  # Min length
-        assert validate_target_filename("a" * 63 + ".webp") is True  # Max length
+        assert validate_target_filename("a" * 64 + ".webp") is True  # Max length
     
     def test_validate_target_filename_invalid(self):
         """Test validate_target_filename with invalid filenames"""
         assert validate_target_filename("Hero.webp") is False  # Uppercase
+        assert validate_target_filename("-test.webp") is False  # Invalid leading character
         assert validate_target_filename("../test.webp") is False  # Path traversal
         assert validate_target_filename("test/path.webp") is False  # Slash
         assert validate_target_filename("test\\path.webp") is False  # Backslash
@@ -159,8 +160,9 @@ class TestValidationFunctions:
         assert validate_manifest_key("hero") is True
         assert validate_manifest_key("test-image") is True
         assert validate_manifest_key("logo_123") is True
+        assert validate_manifest_key("hero.image") is True
         assert validate_manifest_key("a") is True  # Min length
-        assert validate_manifest_key("a" * 63) is True  # Max length
+        assert validate_manifest_key("a" * 64) is True  # Max length
     
     def test_validate_manifest_key_invalid(self):
         """Test validate_manifest_key with invalid keys"""
@@ -169,8 +171,7 @@ class TestValidationFunctions:
         assert validate_manifest_key("test/path") is False  # Slash
         assert validate_manifest_key("") is False  # Empty
         assert validate_manifest_key("a" * 65) is False  # Too long (>64 chars)
-        # Note: dots are allowed in manifest keys (regex includes '.')
-        # so "test.webp" is valid — no assertion for that case
+        assert validate_manifest_key(".test") is False  # Invalid leading character
     
     def test_auto_generate_filename(self):
         """Test auto_generate_filename"""
@@ -384,7 +385,7 @@ class TestPublishManager:
         )
         manager = PublishManager(config)
         
-        with pytest.raises(ValueError, match="cannot be resolved|does not exist"):
+        with pytest.raises(ValueError, match="cannot be resolved|does not exist|Cannot resolve path"):
             manager.resolve_source_path(subfolder="", filename="nonexistent.png")
     
     def test_resolve_target_path(self, tmp_path):

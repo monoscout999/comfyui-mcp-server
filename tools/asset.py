@@ -10,6 +10,7 @@ from asset_processor import (
     fetch_asset_bytes,
     get_cache_key,
 )
+from tools.error_utils import exception_error, tool_error
 
 logger = logging.getLogger("MCP_Server")
 
@@ -51,7 +52,11 @@ def register_asset_tools(
         # Validate asset_id exists in registry (security: only our assets)
         asset_record = asset_registry.get_asset(asset_id)
         if not asset_record:
-            return {"error": f"Asset {asset_id} not found (registry is in-memory and resets on restart). Generate a new asset to regenerate."}
+            return tool_error(
+                f"Asset {asset_id} not found (registry is in-memory and resets on restart). Generate a new asset to regenerate.",
+                code="ASSET_NOT_FOUND_OR_EXPIRED",
+                details={"asset_id": asset_id},
+            )
         
         # Get asset URL (computed from stable identity)
         asset_url = asset_record.asset_url or asset_record.get_asset_url(asset_registry.comfyui_base_url)
@@ -76,17 +81,22 @@ def register_asset_tools(
         
         # Enforce: only "thumb" mode for scoped version
         if mode != "thumb":
-            return {
-                "error": f"Mode '{mode}' not supported in scoped version. Use 'thumb' or 'metadata'."
-            }
+            return tool_error(
+                f"Mode '{mode}' not supported in scoped version. Use 'thumb' or 'metadata'.",
+                code="INVALID_VIEW_MODE",
+                hint="Use mode='thumb' for inline preview or mode='metadata' for metadata only.",
+                details={"mode": mode},
+            )
         
         # Validate content type (only images supported for inline viewing)
         supported_types = ("image/png", "image/jpeg", "image/jpg", "image/webp", "image/gif")
         if asset_record.mime_type not in supported_types:
-            return {
-                "error": f"Asset type '{asset_record.mime_type}' not supported for inline viewing. "
-                         f"Supported types: {', '.join(supported_types)}"
-            }
+            return tool_error(
+                f"Asset type '{asset_record.mime_type}' not supported for inline viewing. "
+                f"Supported types: {', '.join(supported_types)}",
+                code="UNSUPPORTED_ASSET_TYPE",
+                details={"mime_type": asset_record.mime_type},
+            )
         
         # Set conservative defaults
         if max_dim is None:
@@ -140,7 +150,16 @@ def register_asset_tools(
                 }]
             }
         except ImportError as e:
-            return {"error": f"Image processing not available: {e}. Install Pillow: pip install Pillow"}
+            return tool_error(
+                f"Image processing not available: {e}. Install Pillow: pip install Pillow",
+                code="IMAGE_PROCESSING_UNAVAILABLE",
+                hint="Install Pillow in the active Python environment.",
+            )
         except Exception as e:
             logger.exception(f"Failed to process asset {asset_id} for viewing")
-            return {"error": f"Failed to process asset: {str(e)}"}
+            return exception_error(
+                e,
+                code="VIEW_IMAGE_FAILED",
+                hint="Retry view_image() or inspect ComfyUI asset URL reachability.",
+                details={"asset_id": asset_id},
+            )
